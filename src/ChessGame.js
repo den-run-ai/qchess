@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Chessboard from 'chessboardjsx';
+import { Chessboard } from 'react-chessboard';
 import Chess from 'chess.js';
 
 const ChessGame = () => {
@@ -8,12 +8,12 @@ const ChessGame = () => {
   const [history, setHistory] = useState([]);
   const [evalScores, setEvalScores] = useState([]);
 
-  const onDrop = ({ sourceSquare, targetSquare }) => {
+  const onDrop = (sourceSquare, targetSquare) => {
     let newGame = new Chess(game.fen());
     let move = newGame.move({
       from: sourceSquare,
       to: targetSquare,
-      promotion: 'q',
+      promotion: 'q', // Promote to queen
     });
 
     if (move === null) return;
@@ -43,9 +43,9 @@ const ChessGame = () => {
 
   return (
     <div>
-      <Chessboard
-        position={fen}
-        onDrop={onDrop}
+      <Chessboard 
+        position={fen} 
+        onPieceDrop={onDrop} 
       />
       <div>
         <h3>Move History</h3>
