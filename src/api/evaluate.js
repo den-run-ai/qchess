@@ -10,12 +10,16 @@ export default async (req, res) => {
   if (req.method === 'POST') {
     const { moves } = req.body;
 
+    if (!moves || !Array.isArray(moves)) {
+      return res.status(400).json({ error: 'Invalid input: moves should be an array' });
+    }
+
     try {
       const completion = await openai.createChatCompletion({
         model: 'gpt-4',
         messages: [
           { role: 'system', content: 'You are a chess grandmaster' },
-          { role: 'user', content: `Evaluate the following chess moves: ${moves}` },
+          { role: 'user', content: `Evaluate the following chess moves: ${moves.join(', ')}` },
         ],
       });
 
@@ -27,8 +31,12 @@ export default async (req, res) => {
 
       res.status(200).json({ scores });
     } catch (error) {
-      console.error('OpenAI API Error:', error.message);
-      res.status(500).json({ error: 'Failed to evaluate the game' });
+      console.error('OpenAI API Error:', error.response ? error.response.data : error.message);
+      if (error.response && error.response.status === 429) {
+        res.status(429).json({ error: 'Rate limit exceeded. Please try again later.' });
+      } else {
+        res.status(500).json({ error: 'Failed to evaluate the game. Please try again later.' });
+      }
     }
   } else {
     res.status(405).json({ message: 'Only POST requests are allowed' });
