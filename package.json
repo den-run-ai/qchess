@@ -2,8 +2,6 @@
   "name": "qchess",
   "version": "0.1.0",
   "private": true,
-  "description": "Chess game with q algorithm integration",
-  "main": "src/index.js",
   "dependencies": {
     "chess.js": "^0.11.0",
     "react": "^18.0.0",
@@ -13,19 +11,12 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1"
   },
-  "devDependencies": {
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^14.4.3",
-    "jest": "^27.5.1"
-  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src/**/*.js",
-    "format": "prettier --write src/**/*.{js,jsx,json,css,md}"
+    "vercel-build": "react-scripts build"
   },
   "eslintConfig": {
     "extends": [
@@ -44,15 +35,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "author": "Denis Akhiyarov",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/den-run-ai/qchess.git"
-  },
-  "bugs": {
-    "url": "https://github.com/den-run-ai/qchess/issues"
-  },
-  "homepage": "https://github.com/den-run-ai/qchess#readme"
+  }
 }
