@@ -1,20 +1,58 @@
 {
-  "name": "chess-ai-app",
+  "name": "qchess",
   "version": "0.1.0",
   "private": true,
+  "description": "Chess game with q algorithm integration",
+  "main": "src/index.js",
   "dependencies": {
     "chess.js": "^0.11.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-scripts": "5.0.0",
-    "react-chessboard": "^4.7.1",  // Latest version of react-chessboard
-    "react-dnd": "^16.0.1",        // Latest version of react-dnd
-    "react-dnd-html5-backend": "^16.0.1" // Backend for drag-and-drop functionality
+    "react-chessboard": "^4.7.1",
+    "react-dnd": "^16.0.1",
+    "react-dnd-html5-backend": "^16.0.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^14.4.3",
+    "jest": "^27.5.1"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  }
+    "eject": "react-scripts eject",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write src/**/*.{js,jsx,json,css,md}"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "author": "Denis Akhiyarov",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/den-run-ai/qchess.git"
+  },
+  "bugs": {
+    "url": "https://github.com/den-run-ai/qchess/issues"
+  },
+  "homepage": "https://github.com/den-run-ai/qchess#readme"
 }
