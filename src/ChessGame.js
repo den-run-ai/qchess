@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Chessboard from 'chessboardjsx';
 import Chess from 'chess.js';
@@ -10,11 +9,11 @@ const ChessGame = () => {
   const [evalScores, setEvalScores] = useState([]);
 
   const onDrop = ({ sourceSquare, targetSquare }) => {
-    let newGame = { ...game };
+    let newGame = new Chess(game.fen());
     let move = newGame.move({
       from: sourceSquare,
       to: targetSquare,
-      promotion: 'q', // Always promote to queen for simplicity
+      promotion: 'q',
     });
 
     if (move === null) return;
@@ -34,13 +33,20 @@ const ChessGame = () => {
       body: JSON.stringify({ moves }),
     });
 
-    const data = await response.json();
-    setEvalScores(data.scores);
+    if (response.ok) {
+      const data = await response.json();
+      setEvalScores(data.scores);
+    } else {
+      console.error('Failed to fetch evaluation');
+    }
   };
 
   return (
     <div>
-      <Chessboard position={fen} onDrop={onDrop} />
+      <Chessboard
+        position={fen}
+        onDrop={onDrop}
+      />
       <div>
         <h3>Move History</h3>
         <ul>
