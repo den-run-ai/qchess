@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
 import { Chessboard } from 'react-chessboard';
 import Chess from 'chess.js';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const ChessGame = () => {
   const [game, setGame] = useState(new Chess());
   const [fen, setFen] = useState('start');
   const [history, setHistory] = useState([]);
   const [evalScores, setEvalScores] = useState([]);
-  const [apiStatus, setApiStatus] = useState(''); // Track API status
-  const [errorMessage, setErrorMessage] = useState(''); // Track error messages
+  const [apiStatus, setApiStatus] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const onDrop = (sourceSquare, targetSquare) => {
     let newGame = new Chess(game.fen());
@@ -61,7 +63,7 @@ const ChessGame = () => {
   };
 
   return (
-    <div>
+    <DndProvider backend={HTML5Backend}>
       <Chessboard
         position={fen}
         onPieceDrop={onDrop}
@@ -85,7 +87,7 @@ const ChessGame = () => {
         <h3>API Status: {apiStatus}</h3>
         {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       </div>
-    </div>
+    </DndProvider>
   );
 };
 
