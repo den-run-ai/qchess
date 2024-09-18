@@ -7,7 +7,8 @@ const ChessGame = () => {
   const [fen, setFen] = useState('start');
   const [history, setHistory] = useState([]);
   const [evalScores, setEvalScores] = useState([]);
-  const [apiStatus, setApiStatus] = useState(''); // For tracking API status
+  const [apiStatus, setApiStatus] = useState(''); // Track API status
+  const [errorMessage, setErrorMessage] = useState(''); // Track error messages
 
   const onDrop = (sourceSquare, targetSquare) => {
     let newGame = new Chess(game.fen());
@@ -32,6 +33,7 @@ const ChessGame = () => {
 
     if (!process.env.REACT_APP_OPENAI_API_KEY) {
       setApiStatus('Missing OpenAI API Key');
+      setErrorMessage('Please set the OpenAI API Key in your environment variables.');
       return;
     }
 
@@ -44,7 +46,8 @@ const ChessGame = () => {
       });
 
       if (!response.ok) {
-        setApiStatus('Failed to fetch evaluation from OpenAI');
+        setApiStatus('Failed to fetch evaluation');
+        setErrorMessage(`Error: ${response.statusText}`);
         return;
       }
 
@@ -52,7 +55,8 @@ const ChessGame = () => {
       setEvalScores(data.scores);
       setApiStatus('Success');
     } catch (error) {
-      setApiStatus(`Error: ${error.message}`);
+      setApiStatus('API Request Failed');
+      setErrorMessage(`Error: ${error.message}`);
     }
   };
 
@@ -79,6 +83,7 @@ const ChessGame = () => {
       </div>
       <div>
         <h3>API Status: {apiStatus}</h3>
+        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
       </div>
     </div>
   );
