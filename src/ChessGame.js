@@ -5,34 +5,29 @@ import { Chessboard } from 'react-chessboard';
 const ChessGame = () => {
   const [game, setGame] = useState(new Chess());
   const [playerColor, setPlayerColor] = useState('w');
-  const [gameOver, setGameOver] = useState(false);
 
   const makeMove = useCallback((move) => {
-    try {
-      const result = game.move(move);
-      if (result) {
-        setGame(new Chess(game.fen()));
-        return true;
-      }
-    } catch (error) {
-      console.error('Invalid move:', error);
+    const gameCopy = new Chess(game.fen());
+    const result = gameCopy.move(move);
+    if (result) {
+      setGame(gameCopy);
+      return true;
     }
     return false;
   }, [game]);
 
   const makeRandomMove = useCallback(() => {
     const moves = game.moves();
-    if (moves.length > 0 && !game.game_over()) {
+    if (moves.length > 0 && !game.isGameOver()) {
       const randomMove = moves[Math.floor(Math.random() * moves.length)];
       makeMove(randomMove);
     }
   }, [game, makeMove]);
 
   useEffect(() => {
-    if (game.turn() !== playerColor && !game.game_over()) {
+    if (game.turn() !== playerColor && !game.isGameOver()) {
       setTimeout(makeRandomMove, 300);
     }
-    setGameOver(game.game_over());
   }, [game, makeRandomMove, playerColor]);
 
   const onDrop = (sourceSquare, targetSquare) => {
@@ -46,7 +41,6 @@ const ChessGame = () => {
 
   const resetGame = () => {
     setGame(new Chess());
-    setGameOver(false);
   };
 
   return (
@@ -56,7 +50,7 @@ const ChessGame = () => {
         onPieceDrop={onDrop}
         boardOrientation={playerColor === 'w' ? 'white' : 'black'}
       />
-      {gameOver && <div>Game Over! {game.in_checkmate() ? `${game.turn() === 'w' ? 'Black' : 'White'} wins by checkmate!` : 'Draw!'}</div>}
+      {game.isGameOver() && <div>Game Over! {game.isCheckmate() ? `${game.turn() === 'w' ? 'Black' : 'White'} wins by checkmate!` : 'Draw!'}</div>}
       <button onClick={resetGame}>Reset Game</button>
       <button onClick={() => setPlayerColor(playerColor === 'w' ? 'b' : 'w')}>Switch Sides</button>
     </div>
