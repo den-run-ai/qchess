@@ -1,93 +1,65 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Chess } from 'chess.js';
 import { Chessboard } from 'react-chessboard';
-import Chess from 'chess.js';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 
 const ChessGame = () => {
   const [game, setGame] = useState(new Chess());
-  const [fen, setFen] = useState('start');
-  const [history, setHistory] = useState([]);
-  const [evalScores, setEvalScores] = useState([]);
-  const [apiStatus, setApiStatus] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [playerColor, setPlayerColor] = useState('w');
+  const [gameOver, setGameOver] = useState(false);
+
+  const makeMove = useCallback((move) => {
+    try {
+      const result = game.move(move);
+      if (result) {
+        setGame(new Chess(game.fen()));
+        return true;
+      }
+    } catch (error) {
+      console.error('Invalid move:', error);
+    }
+    return false;
+  }, [game]);
+
+  const makeRandomMove = useCallback(() => {
+    const moves = game.moves();
+    if (moves.length > 0 && !game.game_over()) {
+      const randomMove = moves[Math.floor(Math.random() * moves.length)];
+      makeMove(randomMove);
+    }
+  }, [game, makeMove]);
+
+  useEffect(() => {
+    if (game.turn() !== playerColor && !game.game_over()) {
+      setTimeout(makeRandomMove, 300);
+    }
+    setGameOver(game.game_over());
+  }, [game, makeRandomMove, playerColor]);
 
   const onDrop = (sourceSquare, targetSquare) => {
-    let newGame = new Chess(game.fen());
-    let move = newGame.move({
+    const move = makeMove({
       from: sourceSquare,
       to: targetSquare,
-      promotion: 'q',
+      promotion: 'q', // always promote to queen for simplicity
     });
-
-    if (move === null) return;
-
-    setGame(newGame);
-    setFen(newGame.fen());
-
-    setHistory([...history, move.san]);
-
-    fetchEval(newGame.history());
+    return move;
   };
 
-  const fetchEval = async (history) => {
-    const moves = history.join(' ');
-
-    if (!process.env.REACT_APP_OPENAI_API_KEY) {
-      setApiStatus('Missing OpenAI API Key');
-      setErrorMessage('Please set the OpenAI API Key in your environment variables.');
-      return;
-    }
-
-    setApiStatus('Loading...');
-    try {
-      const response = await fetch('/api/evaluate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ moves }),
-      });
-
-      if (!response.ok) {
-        setApiStatus('Failed to fetch evaluation');
-        setErrorMessage(`Error: ${response.statusText}`);
-        return;
-      }
-
-      const data = await response.json();
-      setEvalScores(data.scores);
-      setApiStatus('Success');
-    } catch (error) {
-      setApiStatus('API Request Failed');
-      setErrorMessage(`Error: ${error.message}`);
-    }
+  const resetGame = () => {
+    setGame(new Chess());
+    setGameOver(false);
   };
 
   return (
-    <DndProvider backend={HTML5Backend}>
-      <Chessboard
-        position={fen}
+    <div>
+      <Chessboard 
+        position={game.fen()} 
         onPieceDrop={onDrop}
-        boardWidth={600}  // Adjust width here
+        boardOrientation={playerColor === 'w' ? 'white' : 'black'}
       />
-      <div>
-        <h3>Move History</h3>
-        <ul>
-          {history.map((move, index) => (
-            <li key={index}>{move}</li>
-          ))}
-        </ul>
-        <h3>Evaluation Scores</h3>
-        <ul>
-          {evalScores.map((score, index) => (
-            <li key={index}>Move {index + 1}: {score}</li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h3>API Status: {apiStatus}</h3>
-        {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-      </div>
-    </DndProvider>
+      {gameOver && <div>Game Over! {game.in_checkmate() ? `${game.turn() === 'w' ? 'Black' : 'White'} wins by checkmate!` : 'Draw!'}</div>}
+      <button onClick={resetGame}>Reset Game</button>
+      <button onClick={() => setPlayerColor(playerColor === 'w' ? 'b' : 'w')}>Switch Sides</button>
+    </div>
   );
 };
 
