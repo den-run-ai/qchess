@@ -5,7 +5,6 @@ import { Chessboard } from 'react-chessboard';
 // Replace 'your-openai-api-key' with your actual OpenAI API key.
 // For security reasons, do NOT expose your API key on the client side.
 // Instead, set up a backend server to handle API requests.
-const OPENAI_API_KEY = 'your-openai-api-key';
 
 const ChessGame = () => {
   const [game, setGame] = useState(new Chess());
@@ -61,7 +60,7 @@ Provide your response in the following JSON format:
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${OPENAI_API_KEY}`,
+          'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
         },
         body: JSON.stringify({
           model: 'text-davinci-003', // You can choose a different model if preferred
@@ -104,10 +103,10 @@ Provide your response in the following JSON format:
   }, [game, makeMove]);
 
   useEffect(() => {
-    if (game.turn() !== playerColor && !game.game_over()) {
+    if (game.turn() !== playerColor && !game.isGameOver()) {
       fetchAIMove();
     }
-    setGameOver(game.game_over());
+    setGameOver(game.isGameOver());
   }, [game, fetchAIMove, playerColor]);
 
   const onDrop = (sourceSquare, targetSquare) => {
@@ -150,7 +149,7 @@ Provide your response in the following JSON format:
       {gameOver && (
         <div style={{ marginTop: '10px' }}>
           Game Over!{' '}
-          {game.in_checkmate()
+          {game.isCheckmate()
             ? `${game.turn() === 'w' ? 'Black' : 'White'} wins by checkmate!`
             : 'Draw!'}
         </div>
