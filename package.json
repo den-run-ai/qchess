@@ -4,10 +4,12 @@
   "private": true,
   "dependencies": {
     "chess.js": "^0.11.0",
-    "react-chessboard": "^4.7.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-scripts": "5.0.0"
+    "react-scripts": "5.0.0",
+    "react-chessboard": "^4.7.1",  // Latest version of react-chessboard
+    "react-dnd": "^16.0.1",        // Latest version of react-dnd
+    "react-dnd-html5-backend": "^16.0.1" // Backend for drag-and-drop functionality
   },
   "scripts": {
     "start": "react-scripts start",
